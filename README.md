@@ -11,12 +11,12 @@ and synchronization with backend services.
 ### Requirements
 - macOS
 - Xcode (latest stable version recommended)
-- iOS Simulator (iOS 16+)
+- iOS Simulator (iOS 17+)
 
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/xamchuk/LikesTest
    ```
 2. Open the project:
    ```bash
