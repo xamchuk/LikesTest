@@ -1,0 +1,151 @@
+ARCHITECTURE DOCUMENT — Likes Module, Ruslan Khamskyi
+===================================
+
+Overview
+--------
+The Likes module is responsible for displaying a paginated list of liked items,
+handling user actions (like / discard), synchronizing local state with backend
+services, and maintaining consistency across app restarts and network interruptions.
+
+The module follows a layered architecture with clear separation of concerns:
+
+- UI Layer: ViewControllers, UICollectionView, cells
+- Presentation Layer: ViewModels (Combine-based state updates)
+- Domain Layer: UseCases coordinating business logic
+- Data Layer:
+  - RemoteDataSource (network requests)
+  - LocalDataSource (cached data and pending actions)
+
+This structure allows the module to remain scalable, testable, and resilient to
+network failures.
+
+
+Data Flow and API Contracts
+---------------------------
+
+Read flow (displaying data):
+1. UI requests data via ViewModel.
+2. ViewModel delegates loading to a UseCase.
+3. UseCase:
+   - Loads cached data from LocalDataSource for immediate UI rendering.
+   - Requests fresh data from RemoteDataSource.
+4. Remote response is mapped to domain models.
+5. Local cache is updated.
+6. Updated state is published to UI using Combine.
+
+Write flow (user actions):
+1. User performs an action (like / discard).
+2. UI updates optimistically.
+3. Action is stored locally as a pending operation.
+4. Action is sent to backend.
+5. On success:
+   - Pending action is removed.
+   - Local cache is updated with server state.
+6. On failure:
+   - Pending action remains stored and will be retried.
+
+API contract assumptions:
+- Each item has a stable unique identifier.
+- Server responses include authoritative state.
+
+
+Pagination Model
+----------------
+
+The current implementation uses item identifier–based pagination.
+
+- The initial request loads the first batch of items.
+- Subsequent requests use the last received item's ID as a pagination parameter.
+- Each page returns items with IDs greater than the provided value.
+- Pagination stops when the backend returns an empty result.
+
+This approach is sufficient for the scope of the test task and works reliably
+with a stable dataset.
+
+The pagination parameter can be easily replaced by a cursor without changes to
+the surrounding architecture.
+
+In a production backend environment, cursor-based pagination would be preferred.
+A cursor model is more robust against insertions, deletions, and reordering of
+items, and allows consistent paging even when the dataset changes over time.
+
+Sync Mechanisms
+---------------
+
+Optimistic updates:
+- UI reflects user actions immediately.
+- Local cache is updated optimistically.
+- Backend response reconciles final state.
+
+Pending actions queue:
+- Failed or offline actions are stored locally.
+- Each pending action contains:
+  - Item ID
+  - Action type
+  - Timestamp
+
+Retry triggers:
+- App becomes active
+- Network becomes available (Not implemented)
+- Manual refresh (Not implemented)
+
+Conflict resolution:
+- Pending local actions take precedence for UI rendering.
+- Server-confirmed state replaces local optimistic state once received.
+
+
+Batch vs Incremental Updates
+----------------------------
+
+Incremental updates (primary strategy):
+- Pages are loaded incrementally during scrolling.
+- Updates are applied via diffable snapshots.
+- Minimizes bandwidth and memory usage.
+
+Batch updates (optional / future):
+- Initial cold start may prefetch multiple pages.
+- User actions could be batched if backend supports it.
+
+The architecture supports both strategies without structural changes.
+
+
+Caching Strategy and Invalidation Rules
+---------------------------------------
+
+Cached data:
+- Likes items (keyed by item ID)
+- Pagination cursor
+- Pending actions queue
+
+Cache usage:
+- Cached data is displayed immediately on app start. (Implemented but not connected)
+- Network fetch updates cache in the background.
+- UI stays synchronized via Combine publishers.
+
+Cache Media (Images)
+-------------------
+
+Image caching is handled by a lightweight custom ImageCache service.
+
+- Images are cached on the device disk using a stable key derived from the image URL.
+- When an image is requested:
+  - If it exists on disk, it is loaded from local storage.
+  - If it does not exist, it is downloaded from the backend, stored on disk,
+    and reused for subsequent requests.
+- Disk cache reduces network usage and improves scrolling performance.
+
+Cache invalidation is handled by removing cached files on app reinstall or when
+the cache exceeds a predefined size limit.
+
+Summary
+-------
+
+This architecture provides:
+- Fast UI rendering via cached data
+- Stable pagination using cursor-based model
+- Offline-tolerant behavior through pending action queue
+- Clear separation of concerns
+- Safe and efficient UI updates
+
+The design is suitable for production-level mobile applications and scales
+naturally with additional features.
