@@ -16,7 +16,7 @@ final class MatchesViewController: BaseViewController {
     private lazy var collectionView = LikesCollectionView(collectionDelegate: self,
                                                               heightMultiplier: cellHeightMultiplier,
                                                               isLocked: false,
-                                                              isCellButtons: true)
+                                                              isCellButtons: false)
     
     
     
