@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A30286512EFA90C8008F79A1 /* LikeBLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30286502EFA90C8008F79A1 /* LikeBLockView.swift */; };
+		A30286512EFA90C8008F79A1 /* LikeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30286502EFA90C8008F79A1 /* LikeBlockView.swift */; };
 		A3712E172EFAA93500CCD4F3 /* MatchesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3712E162EFAA93200CCD4F3 /* MatchesViewModel.swift */; };
 		A3712E192EFAAA4400CCD4F3 /* MapEntitiesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3712E182EFAAA3F00CCD4F3 /* MapEntitiesService.swift */; };
 		A3712E1B2EFAB48300CCD4F3 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3712E1A2EFAB47C00CCD4F3 /* NotificationService.swift */; };
@@ -72,7 +72,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A30286502EFA90C8008F79A1 /* LikeBLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeBLockView.swift; sourceTree = "<group>"; };
+		A30286502EFA90C8008F79A1 /* LikeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeBlockView.swift; sourceTree = "<group>"; };
 		A3712E162EFAA93200CCD4F3 /* MatchesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesViewModel.swift; sourceTree = "<group>"; };
 		A3712E182EFAAA3F00CCD4F3 /* MapEntitiesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapEntitiesService.swift; sourceTree = "<group>"; };
 		A3712E1A2EFAB47C00CCD4F3 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 		A376331D2EF96DD700230D4B /* Likes */ = {
 			isa = PBXGroup;
 			children = (
-				A30286502EFA90C8008F79A1 /* LikeBLockView.swift */,
+				A30286502EFA90C8008F79A1 /* LikeBlockView.swift */,
 				A37633202EF96E1A00230D4B /* LikesCollectionCell.swift */,
 				A376331E2EF96DEA00230D4B /* LikesCollectionView.swift */,
 			);
@@ -251,9 +251,9 @@
 				A37633302EF985FF00230D4B /* Datasource */,
 				A37633312EF9860800230D4B /* UseCases */,
 				A37798DC2EF804E400B88343 /* Helpers+extensions */,
-				A37798F02EF83DCE00B88343 /* UIComponents */,
 				A37798B82EF7F81A00B88343 /* Coordinator+Dependency */,
 				A37798B02EF7F71900B88343 /* Services */,
+				A37798F02EF83DCE00B88343 /* UIComponents */,
 				A37798AF2EF7F6FA00B88343 /* Modules */,
 			);
 			path = Likes;
@@ -532,7 +532,7 @@
 				A37798D92EF8025600B88343 /* LikesViewController.swift in Sources */,
 				A37798D12EF7FC5F00B88343 /* SplashViewController.swift in Sources */,
 				A37798C72EF7FA7B00B88343 /* LikesCoordinator.swift in Sources */,
-				A30286512EFA90C8008F79A1 /* LikeBLockView.swift in Sources */,
+				A30286512EFA90C8008F79A1 /* LikeBlockView.swift in Sources */,
 				A37633412EF9902900230D4B /* LikeDB.swift in Sources */,
 				A37633252EF9785F00230D4B /* LikeStatusTagView.swift in Sources */,
 				A3712E1B2EFAB48300CCD4F3 /* NotificationService.swift in Sources */,
@@ -600,8 +600,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ua.test.task.Likes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_APPROACHABLE_CONCURRENCY = NO;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -632,8 +632,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ua.test.task.Likes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_APPROACHABLE_CONCURRENCY = NO;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;

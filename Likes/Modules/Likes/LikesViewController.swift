@@ -132,7 +132,6 @@ final class LikesViewController: BaseViewController {
             }
         }.store(in: &cancellable)
         
-        
         // MAKE first load of likes
         viewModel.onNextPage(id: nil)
             .receive(on: RunLoop.main)
@@ -152,7 +151,6 @@ final class LikesViewController: BaseViewController {
         viewModel.likedYouItems
             .receive(on: RunLoop.main)
             .sink { [weak self] likes in
-               
                 self?.leftCollectionView.reloadAll(items: likes)
         }.store(in: &cancellable)
         
@@ -166,11 +164,16 @@ final class LikesViewController: BaseViewController {
         viewModel.syncFailed()
             .sink { _ in } receiveValue: { }
             .store(in: &cancellable)
+        
+        viewModel.subscribeLikes()
+            .sink { _ in } receiveValue: {}
+            .store(in: &cancellable)
+
     }
     
     // MARK: - Private -
     private func setLikesBlock() {
-        let blockView = LikeBLockView(onUnblurTap: { [weak self] in
+        let blockView = LikeBlockView(onUnblurTap: { [weak self] in
             self?.showTimerView()
         }, onGoToFinderTap: { [weak self] in
             self?.tabBarController?.selectedIndex = 0

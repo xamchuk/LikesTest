@@ -13,4 +13,6 @@ protocol LikesDatasourceType: AnyObject {
     func onDidDiscard(id: String, isFail: Bool) -> AnyPublisher<(), AppError>
     func loadFailed() -> [LikeEntity]
     func save(_ like: LikeEntity)
+    func subscribeLikes(userId: String) -> AnyPublisher<LikeEntity, AppError>
+    func delete(id: String)
 }

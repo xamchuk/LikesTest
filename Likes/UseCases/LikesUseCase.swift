@@ -8,13 +8,13 @@
 import Combine
 
 protocol LikesUseCaseType: AnyObject {
-    
     var likes: CurrentValueSubject<[LikeEntity], Never> { get }
     
     func fetchLikes(after id: String?, pageSize: Int) -> AnyPublisher<(), AppError>
     func onLike(id: String) -> AnyPublisher<(), AppError>
     func onDiscard(id: String) -> AnyPublisher<(), AppError>
     func syncFailed() -> AnyPublisher<(), Never>
+    func subscribeLikes() -> AnyPublisher<(), AppError>
 }
 
 
@@ -42,6 +42,28 @@ final class LikesUseCase {
 
 // MARK: - LikesUseCaseType -
 extension LikesUseCase: LikesUseCaseType {
+    
+    func subscribeLikes() -> AnyPublisher<(), AppError> {
+        networkDatasource.subscribeLikes(userId: "")
+            .handleEvents(receiveOutput: { [weak self] newLIkeItem in
+                guard let self else { return }
+                if let index = self.likes.value.firstIndex(where: { $0.id == newLIkeItem.id }) {
+                    if newLIkeItem.isDiscard {
+                        self.likes.value.remove(at: index)
+                        localDatasource.delete(id: newLIkeItem.id)
+                    } else {
+                        self.likes.value[index] = newLIkeItem
+                        localDatasource.save(newLIkeItem)
+                    }
+                } else {
+                    self.likes.value.insert(newLIkeItem, at: 0)
+                    localDatasource.save(newLIkeItem)
+                }
+              
+            }).map({ _ in () })
+            .eraseToAnyPublisher()
+    }
+    
     func fetchLikes(after id: String?, pageSize: Int) -> AnyPublisher<(), AppError> {
         networkDatasource.loadLikes(after: id, pageSize: pageSize)
             .handleEvents(receiveOutput: { [weak self] likesFromServer in

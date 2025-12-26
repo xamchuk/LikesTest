@@ -9,21 +9,9 @@ import UIKit
 
 final class ProfileViewController: BaseViewController {
     
-    // MARK: - Views -
-    
-    // MARK: - Constraints -
-    
-    // MARK: - UIConstants -
-    
-    // MARK: - Delegates -
-    
-    // MARK: - View Model -
-    
     // MARK: - Coordinator -
     private weak var coordinator: ProfileCoordinatorProtocol?
-    
-    // MARK: - Properties -
-    
+ 
     // MARK: - Init -
     init(coordinator: ProfileCoordinatorProtocol) {
         self.coordinator = coordinator
@@ -40,14 +28,18 @@ final class ProfileViewController: BaseViewController {
         setup()
     }
     
-    
     // MARK: - Setup Methods -
     private func setup() {
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            NetworkService.mockDeletion()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                NetworkService.mockUpdate()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    NetworkService.mockInsertion()
+                }
+            }
+        }
     }
-    
-    // MARK: - Private -
-    
-    // MARK: - Actions -
-
 }

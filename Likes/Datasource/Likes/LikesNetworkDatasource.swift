@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class LikesNetworkDatasource {
     
@@ -20,6 +21,10 @@ final class LikesNetworkDatasource {
 
 // MARK: - LikesDatasourceType -
 extension LikesNetworkDatasource: LikesDatasourceType {
+    func subscribeLikes(userId: String) -> AnyPublisher<LikeEntity, AppError> {
+        network.connect(url: URL(string: "https://google.com")!, headers: [:])
+    }
+    
     func onDidLike(id: String, isSynced: Bool = true) -> AnyPublisher<(), AppError> {
         network.mockLikeDidSet(for: id)
     }
@@ -29,15 +34,22 @@ extension LikesNetworkDatasource: LikesDatasourceType {
     }
     
     func loadFailed() -> [LikeEntity] {
-        []
-    }
-    
-    func load() -> [LikeEntity] {
-        assertionFailure()
+        assertionFailure("should not be called from network datasource")
         return []
     }
     
-    func save(_ like: LikeEntity) {}
+    func load() -> [LikeEntity] {
+        assertionFailure("should not be called from network datasource")
+        return []
+    }
+    
+    func delete(id: String) {
+        assertionFailure("should not be called from network datasource")
+    }
+    
+    func save(_ like: LikeEntity) {
+        assertionFailure("should not be called from network datasource")
+    }
     
     func loadLikes(after id: String?, pageSize: Int) -> AnyPublisher<[LikeEntity], AppError> {
         network.mockRequestGet(after: id, pageSize: pageSize)

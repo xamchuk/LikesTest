@@ -7,7 +7,7 @@
 
 struct LikeEntity: Decodable, Identifiable, Hashable {
     let id: String
-    let name: String
+    var name: String
     let previewImageURL: String
     let images: [String]
    

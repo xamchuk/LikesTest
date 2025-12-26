@@ -124,6 +124,30 @@ final class LikesLocalDatasource {
 
 // MARK: - LikesDatasourceType -
 extension LikesLocalDatasource: LikesDatasourceType {
+    
+    func delete(id: String) {
+        self.container.performBackgroundTask { context in
+            do {
+                let req: NSFetchRequest<LikeDB> = LikeDB.fetchRequest()
+                req.fetchLimit = 1
+                req.predicate = NSPredicate(format: "id == %@", id)
+                if let mo = try context.fetch(req).first {
+                    context.delete(mo)
+                    try context.save()
+                }
+            } catch {
+                
+            }
+        }
+    }
+    
+    func subscribeLikes(userId: String) -> AnyPublisher<LikeEntity, AppError> {
+        assertionFailure("Should not be called from local datasource")
+        return Empty()
+            .setFailureType(to: AppError.self)
+            .eraseToAnyPublisher()
+    }
+    
     // Paging rule here: order by lastUpdated desc.
     // If "after id" provided: fetch items with lastUpdated < lastUpdated(of that id)
     func loadLikes(after id: String?, pageSize: Int) -> AnyPublisher<[LikeEntity], AppError> {

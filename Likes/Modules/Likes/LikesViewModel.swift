@@ -17,6 +17,7 @@ protocol LikesViewModelType: AnyObject {
     func onDiscard(id: String) -> AnyPublisher<(), AppError>
     func syncFailed() -> AnyPublisher<(), Never>
     func onUnblur() -> AnyPublisher<TimerUIItem.Output, Never>
+    func subscribeLikes() -> AnyPublisher<(), AppError>
 }
 
 
@@ -75,5 +76,9 @@ extension LikesViewModel: LikesViewModelType {
         self.isLikesBlocked.send(false)
         return timer!.output
             .eraseToAnyPublisher()
+    }
+    
+    func subscribeLikes() -> AnyPublisher<(), AppError> {
+        useCase.subscribeLikes()
     }
 }

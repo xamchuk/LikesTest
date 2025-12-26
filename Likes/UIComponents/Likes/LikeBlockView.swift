@@ -8,7 +8,20 @@
 
 import UIKit
 
-final class LikeBLockView: UIView {
+final class LikeBlockView: UIView {
+    
+    // MARK: - Views -
+    private let itemsStackView = UIStackView(arrangedSubviews: [
+        LikeBlockItemView(image: .mock1),
+        LikeBlockItemView(image: .mock2),
+    ])
+        .spacing(8)
+        .axis(.horizontal)
+        .distribution(.fillEqually)
+        .alignment(.top)
+    
+    // MARK: - Layers -
+    private let fadeMask = CAGradientLayer()
     
     // MARK: - Properties -
     private let onUnblurTap: () -> Void
@@ -26,21 +39,33 @@ final class LikeBLockView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        fadeMask.frame = itemsStackView.bounds
+    }
+    
     // MARK: - Setup -
     private func setup() {
-        // TODO: - Create real images with blur and fade, It will save app's size
-        // To save a bit time - I'm just using mock image from figma
-    
-        let blurImageView = UIImageView(image: .mockBlur)
-        self.addSubview(blurImageView)
-        blurImageView.translatesAutoresizingMaskIntoConstraints = false
-        blurImageView.contentMode = .scaleAspectFill
+        self.addSubview(itemsStackView)
+        itemsStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            blurImageView.topAnchor.constraint(equalTo: topAnchor),
-            blurImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            blurImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            itemsStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+            itemsStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 8),
+            itemsStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -8),
         ])
         
+        // fadeMask
+        fadeMask.startPoint = CGPoint(x: 0.5, y: 0.0)
+        fadeMask.endPoint   = CGPoint(x: 0.5, y: 1.0)
+        fadeMask.colors = [
+            UIColor.white.cgColor,
+            UIColor.clear.cgColor,
+            UIColor.clear.cgColor
+        ]
+        fadeMask.locations = [0.0, 0.55, 1.0] as [NSNumber]
+        itemsStackView.layer.mask = fadeMask
+        
+        // titleLabel, subtitleLabel
         let titleLabel = LikesFactory.Labels.b2Bold(size: 28, color: .lBlack)
         titleLabel.textAlignment = .center
         let subtitleLabel = LikesFactory.Labels.b2Regular(size: 14)
@@ -100,5 +125,31 @@ final class LikeBLockView: UIView {
     @objc private func onUnblurTapped() {
         self.onUnblurTap()
         self.removeFromSuperview()
+    }
+}
+
+
+final class LikeBlockItemView: UIView {
+    
+    // MARK: - Init -
+    init(image: UIImage) {
+        super.init(frame: .zero)
+        setup(image: image)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Setup -
+    private func setup(image: UIImage) {
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.corner(24)
+       
+        imageView.addAndFill(self)
+        
+        imageView.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1.57).isActive = true
     }
 }

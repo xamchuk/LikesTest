@@ -16,16 +16,15 @@ protocol LikesCollectionViewDelegate: AnyObject {
 final class LikesCollectionView: UICollectionView {
     
     private enum LikesSection: Hashable, Sendable { case main }
-    private struct LikeItem: Hashable, Sendable { let id: String }
-    
+   
     // MARK: - Delegates -
     private weak var collectionDelegate: LikesCollectionViewDelegate?
     
     // MARK: - Properties -
     private var isLocked: Bool
     private let isCellButtons: Bool
-    private var itemsById: [String: LikesCollectionCell.Content] = [:]
-    private var dataSourceDiffable: UICollectionViewDiffableDataSource<Int, String>!
+  //  private var itemsById: [String: LikesCollectionCell.Content] = [:]
+    private var dataSourceDiffable: UICollectionViewDiffableDataSource<LikesSection, LikesCollectionCell.Content>!
     
     // MARK: - Init -
     init(collectionDelegate: LikesCollectionViewDelegate, heightMultiplier: CGFloat, isLocked: Bool, isCellButtons: Bool) {
@@ -52,7 +51,7 @@ final class LikesCollectionView: UICollectionView {
         self.contentInset.top = 8
         self.contentInset.bottom = 65
         
-        self.dataSourceDiffable = UICollectionViewDiffableDataSource<Int, String>(collectionView: self) { [weak self] collectionView, indexPath, id in
+        self.dataSourceDiffable = UICollectionViewDiffableDataSource<LikesSection, LikesCollectionCell.Content>(collectionView: self) { [weak self] collectionView, indexPath, content in
             guard let self else { return UICollectionViewCell() }
             
             let cell = collectionView.dequeueReusableCell(
@@ -60,13 +59,13 @@ final class LikesCollectionView: UICollectionView {
                 for: indexPath
             ) as! LikesCollectionCell
             
-            if let content = self.itemsById[id] {
+         
                 cell.set(content: content,
                          delegate: self,
                          indexPath: indexPath,
                          isLocked: self.isLocked,
                          isControls: self.isCellButtons)
-            }
+            
             
             return cell
         }
@@ -80,13 +79,12 @@ final class LikesCollectionView: UICollectionView {
     
     // MARK: - Data source -
     private func applySnapshot(likes: [LikesCollectionCell.Content], animatingDifferences: Bool = true) {
-        itemsById = Dictionary(uniqueKeysWithValues: likes.map { ($0.id, $0) })
-        
-        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
-        snapshot.appendSections([0])
-        snapshot.appendItems(likes.map { $0.id }, toSection: 0)
-        
-        dataSourceDiffable.apply(snapshot, animatingDifferences: animatingDifferences)
+        var snapshot = NSDiffableDataSourceSnapshot<LikesSection, LikesCollectionCell.Content>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(likes,
+                             toSection: .main)
+        dataSourceDiffable.apply(snapshot,
+                                 animatingDifferences: animatingDifferences)
     }
     
     // MARK: - Layout -
@@ -149,8 +147,8 @@ extension LikesCollectionView: UICollectionViewDelegate {
         let total = snapshot.numberOfItems
         guard total > 0 else { return }
         
-        if indexPath.item == total - 1, let lastId = snapshot.itemIdentifiers.last {
-            collectionDelegate?.willShowCell(id: lastId, of: self)
+        if indexPath.item == total - 1, let lastItem = snapshot.itemIdentifiers.last {
+            collectionDelegate?.willShowCell(id: lastItem.id, of: self)
         }
     }
 }
@@ -159,13 +157,13 @@ extension LikesCollectionView: UICollectionViewDelegate {
 extension LikesCollectionView: LikesCollectionCellDelegate {
     func onLike(form cell: UICollectionViewCell) {
         guard let indexPath = indexPath(for: cell),
-              let id = dataSourceDiffable.itemIdentifier(for: indexPath) else { return }
-        collectionDelegate?.didLike(id: id)
+              let item = dataSourceDiffable.itemIdentifier(for: indexPath) else { return }
+        collectionDelegate?.didLike(id: item.id)
     }
     
     func onDiscard(from cell: UICollectionViewCell) {
         guard let indexPath = indexPath(for: cell),
-              let id = dataSourceDiffable.itemIdentifier(for: indexPath) else { return }
-        collectionDelegate?.didDiscard(id: id)
+              let item = dataSourceDiffable.itemIdentifier(for: indexPath) else { return }
+        collectionDelegate?.didDiscard(id: item.id)
     }
 }
